@@ -1,0 +1,50 @@
+# ----- CONFIGURED -----
+
+AllCops:
+  TargetRubyVersion: 2.3
+  DisplayCopNames: true
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInLiteral:
+  EnforcedStyleForMultiline: comma
+
+Layout/IndentArray:
+  EnforcedStyle: consistent
+
+
+
+# ----- DISABLED (metrics) -----
+
+# Cops for metrics are disabled because they should not cause tests to fail.
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/BlockNesting:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/LineLength:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
