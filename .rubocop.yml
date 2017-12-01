@@ -13,6 +13,10 @@ Style/TrailingCommaInLiteral:
 Layout/IndentArray:
   EnforcedStyle: consistent
 
+# The documentation lives in the README.
+Style/Documentation:
+  Enabled: false
+
 
 
 # ----- DISABLED (metrics) -----
