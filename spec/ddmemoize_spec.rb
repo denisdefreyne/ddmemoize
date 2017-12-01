@@ -6,7 +6,7 @@ describe DDMemoize do
   end
 
   class MemoizationSpecSample1
-    extend DDMemoize
+    DDMemoize.activate(self)
 
     def initialize(value)
       @value = value
@@ -19,7 +19,7 @@ describe DDMemoize do
   end
 
   class MemoizationSpecSample2
-    extend DDMemoize
+    DDMemoize.activate(self)
 
     def initialize(value)
       @value = value
@@ -32,7 +32,7 @@ describe DDMemoize do
   end
 
   class MemoizationSpecUpcaser
-    extend DDMemoize
+    DDMemoize.activate(self)
 
     def run(value)
       value.upcase
@@ -41,7 +41,7 @@ describe DDMemoize do
   end
 
   class MemoizationSpecUpcaserInlineSyntax
-    extend DDMemoize
+    DDMemoize.activate(self)
 
     memoized def run(value)
       value.upcase
@@ -49,7 +49,7 @@ describe DDMemoize do
   end
 
   class MemoizationSpecInlineSyntaxReturn
-    extend DDMemoize
+    DDMemoize.activate(self)
 
     class << self
       attr_reader :sym
