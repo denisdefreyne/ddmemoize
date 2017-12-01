@@ -102,12 +102,4 @@ describe DDMemoize do
   it 'returns method name' do
     expect(MemoizationSpecInlineSyntaxReturn.sym).to eq(:run)
   end
-
-  # TODO: enable telemetry
-  # it 'sends notifications' do
-  #   sample = MemoizationSpecSample1.new(10)
-  #   expect { sample.run(5) }.to send_notification(:memoization_miss, 'MemoizationSpecSample1#run')
-  #   expect { sample.run(5) }.to send_notification(:memoization_hit, 'MemoizationSpecSample1#run')
-  #   expect { sample.run(5) }.to send_notification(:memoization_hit, 'MemoizationSpecSample1#run')
-  # end
 end
