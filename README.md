@@ -6,7 +6,30 @@
 
 # DDMemoize
 
-TODO
+_DDMemoize_ adds support for memoizing Ruby functions.
+
+For example, the following Fibonacci implementation runs quickly (in O(n) rather than in O(2^n)):
+
+```ruby
+class FibFast
+  DDMemoize.activate(self)
+
+  memoized def run(n)
+    if n == 0
+      0
+    elsif n == 1
+      1
+    else
+      run(n - 1) + run(n - 2)
+    end
+  end
+end
+```
+
+Features:
+
+* Supports memoizing functions on frozen objects
+* Releases memoized values when needed in order to reduce memory pressure
 
 ## Installation
 
@@ -26,7 +49,36 @@ Or install it yourself as:
 
 ## Usage
 
-TODO
+First, require `ddmemoize` and enable it using `DDMemoize.activate`:
+
+```ruby
+require 'ddmemoize'
+
+class FibFast
+  DDMemoize.activate(self)
+
+  # …
+end
+```
+
+To memoize a function, call `memoize` with the name of the function:
+
+```ruby
+  def run(n)
+    # …
+  end
+  memoize :run
+```
+
+Alternatively, prepend `memoized` to the function definition:
+
+```ruby
+  memoized def run(n)
+    # …
+  end
+```
+
+Do not memoie functions that depend on mutable state.
 
 ## Development
 
