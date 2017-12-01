@@ -84,7 +84,7 @@ module DDMemoize
         if telemetry
           counter_label = is_a?(Class) ? "#{self}.#{method_name}" : "#{self.class}##{method_name}"
 
-          if value.equal?(NONE)
+          if NONE.equal?(value)
             telemetry.counter(:memoization).increment([counter_label, :miss])
           else
             telemetry.counter(:memoization).increment([counter_label, :hit])
