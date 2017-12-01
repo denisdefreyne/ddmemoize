@@ -30,6 +30,7 @@ Features:
 
 * Supports memoizing functions on frozen objects
 * Releases memoized values when needed in order to reduce memory pressure
+* Optionally records telemetry
 
 ## Installation
 
@@ -79,6 +80,28 @@ Alternatively, prepend `memoized` to the function definition:
 ```
 
 Do not memoize functions that depend on mutable state.
+
+### Telemetry
+
+To activate telemetry for a given class, call `DDMemoize.activate` with a `telemetry` keyword argument, passing in a telemetry instance:
+
+```ruby
+require 'ddmemoize'
+
+TELEMETRY = DDTelemetry.new
+
+class FibFast
+  DDMemoize.activate(self, telemetry: TELEMETRY)
+
+  # …
+end
+```
+
+To print the collected metrics, call `DDMemoize.print_telemetry`, passing in the telemetry instance:
+
+```ruby
+DDMemoize.print_telemetry(TELEMETRY)
+```
 
 ## Development
 

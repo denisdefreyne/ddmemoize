@@ -62,6 +62,16 @@ describe DDMemoize do
     record memoized def run; end
   end
 
+  class MemoizationSpecWithTelemetry
+    TELEMETRY = ::DDTelemetry.new
+    DDMemoize.activate(self, telemetry: TELEMETRY)
+
+    def run(value)
+      value.upcase
+    end
+    memoize :run
+  end
+
   example do
     sample1a = MemoizationSpecSample1.new(10)
     sample1b = MemoizationSpecSample1.new(15)
@@ -101,5 +111,19 @@ describe DDMemoize do
 
   it 'returns method name' do
     expect(MemoizationSpecInlineSyntaxReturn.sym).to eq(:run)
+  end
+
+  it 'records telemetry' do
+    sample = MemoizationSpecWithTelemetry.new
+
+    sample.run('denis')
+    sample.run('denis')
+    sample.run('defreyne')
+
+    telemetry = MemoizationSpecWithTelemetry::TELEMETRY
+    counter = telemetry.counter(:memoization)
+
+    expect(counter.value(['MemoizationSpecWithTelemetry#run', :miss])).to eq(2)
+    expect(counter.value(['MemoizationSpecWithTelemetry#run', :hit])).to eq(1)
   end
 end
