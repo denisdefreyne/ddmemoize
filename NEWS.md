@@ -1,5 +1,5 @@
 # DDMemoize news
 
-## 1.0.0a1 (2017-11-28)
+## 1.0.0a1 (2017-12-02)
 
-TODO
+Initial release.
