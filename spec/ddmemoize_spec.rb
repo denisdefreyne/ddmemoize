@@ -40,6 +40,22 @@ describe DDMemoize do
     memoize :run
   end
 
+  class MemoizationSpecEqual
+    TELEMETRY = ::DDTelemetry.new
+    DDMemoize.activate(self, telemetry: TELEMETRY)
+
+    class EqualToEverythingValue
+      def equal?(*)
+        true
+      end
+    end
+
+    def run
+      EqualToEverythingValue.new
+    end
+    memoize :run
+  end
+
   class MemoizationSpecUpcaserInlineSyntax
     DDMemoize.activate(self)
 
@@ -90,6 +106,20 @@ describe DDMemoize do
     sample = MemoizationSpecSample1.new(10)
     sample.freeze
     sample.run(5)
+  end
+
+  it 'supports objects that bizarrely override #equal?' do
+    sample = MemoizationSpecEqual.new
+    sample.freeze
+    sample.run
+    sample.run
+    sample.run
+
+    telemetry = MemoizationSpecEqual::TELEMETRY
+    counter = telemetry.counter(:memoization)
+
+    expect(counter.value(['MemoizationSpecEqual#run', :miss])).to eq(1)
+    expect(counter.value(['MemoizationSpecEqual#run', :hit])).to eq(2)
   end
 
   it 'supports memoized def … syntax' do
