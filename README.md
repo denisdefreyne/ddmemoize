@@ -78,7 +78,7 @@ Alternatively, prepend `memoized` to the function definition:
   end
 ```
 
-Do not memoie functions that depend on mutable state.
+Do not memoize functions that depend on mutable state.
 
 ## Development
 
