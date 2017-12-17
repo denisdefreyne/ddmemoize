@@ -2,10 +2,10 @@
 
 require 'ddmemoize'
 
-TELEMETRY = DDTelemetry.new
+DDMemoize.enable_telemetry
 
 class FibFast
-  DDMemoize.activate(self, telemetry: TELEMETRY)
+  DDMemoize.activate(self)
 
   memoized def fib(n)
     case n
@@ -21,4 +21,4 @@ end
 
 p FibFast.new.fib(1000)
 
-DDMemoize.print_telemetry(TELEMETRY)
+DDMemoize.print_telemetry

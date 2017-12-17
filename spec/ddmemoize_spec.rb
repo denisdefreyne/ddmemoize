@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+DDMemoize.enable_telemetry
+
 describe DDMemoize do
   it 'has a version number' do
     expect(DDMemoize::VERSION).not_to be nil
@@ -41,8 +43,7 @@ describe DDMemoize do
   end
 
   class MemoizationSpecEqual
-    TELEMETRY = ::DDTelemetry.new
-    DDMemoize.activate(self, telemetry: TELEMETRY)
+    DDMemoize.activate(self)
 
     class EqualToEverythingValue
       def equal?(*)
@@ -79,8 +80,7 @@ describe DDMemoize do
   end
 
   class MemoizationSpecWithTelemetry
-    TELEMETRY = ::DDTelemetry.new
-    DDMemoize.activate(self, telemetry: TELEMETRY)
+    DDMemoize.activate(self)
 
     def run(value)
       value.upcase
@@ -115,11 +115,10 @@ describe DDMemoize do
     sample.run
     sample.run
 
-    telemetry = MemoizationSpecEqual::TELEMETRY
-    counter = telemetry.counter(:memoization)
+    counter = DDMemoize.telemetry_counter
 
-    expect(counter.value(['MemoizationSpecEqual#run', :miss])).to eq(1)
-    expect(counter.value(['MemoizationSpecEqual#run', :hit])).to eq(2)
+    expect(counter.get(['MemoizationSpecEqual#run', :miss])).to eq(1)
+    expect(counter.get(['MemoizationSpecEqual#run', :hit])).to eq(2)
   end
 
   it 'supports memoized def … syntax' do
@@ -150,11 +149,10 @@ describe DDMemoize do
     sample.run('denis')
     sample.run('defreyne')
 
-    telemetry = MemoizationSpecWithTelemetry::TELEMETRY
-    counter = telemetry.counter(:memoization)
+    counter = DDMemoize.telemetry_counter
 
-    expect(counter.value(['MemoizationSpecWithTelemetry#run', :miss])).to eq(2)
-    expect(counter.value(['MemoizationSpecWithTelemetry#run', :hit])).to eq(1)
+    expect(counter.get(['MemoizationSpecWithTelemetry#run', :miss])).to eq(2)
+    expect(counter.get(['MemoizationSpecWithTelemetry#run', :hit])).to eq(1)
   end
 
   it 'prints recorded telemetry' do
@@ -164,13 +162,6 @@ describe DDMemoize do
     sample.run('denis')
     sample.run('defreyne')
 
-    expected = <<~OUTPUT
-                           memoization │ hit   miss       %
-      ─────────────────────────────────┼───────────────────
-      MemoizationSpecWithTelemetry#run │   2      4   33.3%
-    OUTPUT
-
-    telemetry = MemoizationSpecWithTelemetry::TELEMETRY
-    expect { DDMemoize.print_telemetry(telemetry) }.to output(expected).to_stdout
+    expect { DDMemoize.print_telemetry }.to output(/memoization │ hit\s+miss\s+%/).to_stdout
   end
 end

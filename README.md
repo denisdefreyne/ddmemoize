@@ -83,24 +83,18 @@ Do not memoize functions that depend on mutable state.
 
 ### Telemetry
 
-To activate telemetry for a given class, call `DDMemoize.activate` with a `telemetry` keyword argument, passing in a telemetry instance:
+To activate telemetry, call `DDMemoize.enable_telemetry` after requiring `ddmemoize`.
+
+To print the collected metrics, call `DDMemoize.print_telemetry`:
 
 ```ruby
-require 'ddmemoize'
-
-TELEMETRY = DDTelemetry.new
-
-class FibFast
-  DDMemoize.activate(self, telemetry: TELEMETRY)
-
-  # …
-end
+DDMemoize.print_telemetry
 ```
 
-To print the collected metrics, call `DDMemoize.print_telemetry`, passing in the telemetry instance:
-
-```ruby
-DDMemoize.print_telemetry(TELEMETRY)
+```
+memoization │ hit   miss       %
+────────────┼───────────────────
+FibFast#fib │ 998   1001   49.9%
 ```
 
 ## Development

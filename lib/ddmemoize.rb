@@ -15,39 +15,31 @@ module DDMemoize
     end
   end
 
-  # @api private
-  class TelemetryMap
-    include Singleton
-
-    def initialize
-      @map = {}
-    end
-
-    def [](mod)
-      @map[mod]
-    end
-
-    def []=(mod, telemetry)
-      @map[mod] = telemetry
-    end
-  end
-
   NONE = Object.new
 
-  def self.activate(mod, telemetry: nil)
+  def self.activate(mod)
     mod.extend(Mixin)
-    TelemetryMap.instance[mod] = telemetry
   end
 
-  def self.telemetry_for(mod)
-    TelemetryMap.instance[mod]
+  class << self
+    def enable_telemetry
+      @telemetry_enabled = true
+    end
+
+    def telemetry_enabled?
+      @telemetry_enabled
+    end
+
+    def telemetry_counter
+      @_telemetry_counter ||= DDTelemetry::Counter.new
+    end
   end
 
-  def self.print_telemetry(telemetry)
+  def self.print_telemetry
     headers = %w[memoization hit miss %]
 
-    rows_raw = telemetry.counter(:memoization).map do |(name, type), counter|
-      { name: name, type: type, count: counter.value }
+    rows_raw = DDMemoize.telemetry_counter.map do |(name, type), count|
+      { name: name, type: type, count: count }
     end
 
     rows = rows_raw.group_by { |r| r[:name] }.map do |name, rows_for_name|
@@ -70,7 +62,7 @@ module DDMemoize
       alias_method original_method_name, method_name
 
       instance_cache = Hash.new { |hash, key| hash[key] = {} }
-      telemetry = DDMemoize.telemetry_for(self)
+      counter_label = "#{self}##{method_name}"
 
       define_method(method_name) do |*args|
         instance_method_cache = instance_cache[self]
@@ -81,13 +73,11 @@ module DDMemoize
           value = object ? object.value : NONE
         end
 
-        if telemetry
-          counter_label = is_a?(Class) ? "#{self}.#{method_name}" : "#{self.class}##{method_name}"
-
+        if DDMemoize.telemetry_enabled?
           if NONE.equal?(value)
-            telemetry.counter(:memoization).increment([counter_label, :miss])
+            DDMemoize.telemetry_counter.increment([counter_label, :miss])
           else
-            telemetry.counter(:memoization).increment([counter_label, :hit])
+            DDMemoize.telemetry_counter.increment([counter_label, :hit])
           end
         end
 
