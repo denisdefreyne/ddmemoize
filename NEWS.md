@@ -1,5 +1,11 @@
 # DDMemoize news
 
+## 1.0.0a3 (2017-12-18)
+
+Changes:
+
+* Simplified telemetry support
+
 ## 1.0.0a2 (2017-12-10)
 
 Features:
