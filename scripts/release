@@ -2,30 +2,20 @@
 # frozen_string_literal: true
 
 require 'fileutils'
+require 'json'
+require 'netrc'
 require 'octokit'
+require 'shellwords'
+require 'uri'
 
 def run(*args)
-  puts 'I will execute the following:'
-  puts '    ' + args.map { |a| a =~ /\s/ ? a.inspect : a }.join(' ')
-  print 'Is this correct? [y/N] '
-  res = gets
-  unless res.strip.casecmp('y').zero?
-    warn 'Answer was not Y; release aborted.'
-    exit 1
-  end
-
-  system('echo', *args)
+  puts('<exec> ' + args.map { |s| Shellwords.escape(s) }.join(' '))
   system(*args)
-
-  print 'Continue? [y/N] '
-  res = gets
-  unless res.strip.casecmp('y').zero?
-    warn 'Answer was not Y; release aborted.'
-    exit 1
-  end
-
-  true
 end
+
+gem_name = 'ddmemoize'
+version_constant = 'DDMemoize::VERSION'
+gem_path = 'ddmemoize'
 
 puts '=== Logging in to GitHub’s API…'
 client = Octokit::Client.new(netrc: true)
@@ -33,7 +23,7 @@ puts
 
 puts '=== Deleting old *.gem files…'
 Dir['*.gem'].each do |fn|
-  puts "  #{fn}…"
+  puts "deleting #{fn}…"
   FileUtils.rm_f(fn)
 end
 puts
@@ -45,13 +35,41 @@ unless File.readlines('NEWS.md').drop(2).first =~ / \(\d{4}-\d{2}-\d{2}\)$/
 end
 puts
 
+puts '=== Reading version…'
+require "./lib/#{gem_path}/version"
+version = eval(version_constant) # rubocop:disable Security/Eval
+puts "Version = #{version}"
+puts
+
 puts '=== Building new gem…'
 run('gem', 'build', 'ddmemoize.gemspec')
 puts
 
-puts '=== Reading version…'
-require './lib/ddmemoize/version'
-puts "Version = #{DDMemoize::VERSION}"
+puts '=== Verifying that gems were built properly…'
+gem_filename = "#{gem_name}-#{version}.gem"
+unless File.file?(gem_filename)
+  warn "Error: Could not find gem: #{gem_filename}"
+  exit 1
+end
+puts
+
+puts '=== Verifying that gem version does not yet exist…'
+url = URI.parse("https://rubygems.org/api/v1/versions/#{gem_name}.json")
+response = Net::HTTP.get_response(url)
+existing_versions =
+  case response.code
+  when '404'
+    []
+  when '200'
+    JSON.parse(response.body).map { |e| e.fetch('number') }
+  else
+    warn "Error: Couldn’t fetch version information for #{gem_name} (status #{response.code})"
+    exit 1
+  end
+if existing_versions.include?(version)
+  warn "Error: #{gem_name} v#{version} already exists"
+  exit 1
+end
 puts
 
 puts '=== Verifying that release does not yet exist…'
