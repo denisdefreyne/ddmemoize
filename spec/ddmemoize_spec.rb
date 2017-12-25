@@ -117,8 +117,8 @@ describe DDMemoize do
 
     counter = DDMemoize.telemetry_counter
 
-    expect(counter.get(['MemoizationSpecEqual#run', :miss])).to eq(1)
-    expect(counter.get(['MemoizationSpecEqual#run', :hit])).to eq(2)
+    expect(counter.get(method: 'MemoizationSpecEqual#run', type: :miss)).to eq(1)
+    expect(counter.get(method: 'MemoizationSpecEqual#run', type: :hit)).to eq(2)
   end
 
   it 'supports memoized def … syntax' do
@@ -151,8 +151,8 @@ describe DDMemoize do
 
     counter = DDMemoize.telemetry_counter
 
-    expect(counter.get(['MemoizationSpecWithTelemetry#run', :miss])).to eq(2)
-    expect(counter.get(['MemoizationSpecWithTelemetry#run', :hit])).to eq(1)
+    expect(counter.get(method: 'MemoizationSpecWithTelemetry#run', type: :miss)).to eq(2)
+    expect(counter.get(method: 'MemoizationSpecWithTelemetry#run', type: :hit)).to eq(1)
   end
 
   it 'prints recorded telemetry' do

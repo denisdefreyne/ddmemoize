@@ -38,8 +38,12 @@ module DDMemoize
   def self.print_telemetry
     headers = %w[memoization hit miss %]
 
-    rows_raw = DDMemoize.telemetry_counter.map do |(name, type), count|
-      { name: name, type: type, count: count }
+    rows_raw = DDMemoize.telemetry_counter.map do |label, count|
+      {
+        name: label.fetch(:method),
+        type: label.fetch(:type),
+        count: count,
+      }
     end
 
     rows = rows_raw.group_by { |r| r[:name] }.map do |name, rows_for_name|
@@ -62,7 +66,7 @@ module DDMemoize
       alias_method original_method_name, method_name
 
       instance_cache = Hash.new { |hash, key| hash[key] = {} }
-      counter_label = "#{self}##{method_name}"
+      full_method_name = "#{self}##{method_name}"
 
       define_method(method_name) do |*args|
         instance_method_cache = instance_cache[self]
@@ -75,9 +79,9 @@ module DDMemoize
 
         if DDMemoize.telemetry_enabled?
           if NONE.equal?(value)
-            DDMemoize.telemetry_counter.increment([counter_label, :miss])
+            DDMemoize.telemetry_counter.increment(method: full_method_name, type: :miss)
           else
-            DDMemoize.telemetry_counter.increment([counter_label, :hit])
+            DDMemoize.telemetry_counter.increment(method: full_method_name, type: :hit)
           end
         end
 
