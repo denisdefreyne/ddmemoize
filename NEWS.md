@@ -1,5 +1,11 @@
 # DDMemoize news
 
+## 1.0.0rc1 (2018-01-04)
+
+Changes:
+
+* Renamed telemetry to metrics
+
 ## 1.0.0a3 (2017-12-18)
 
 Changes:
