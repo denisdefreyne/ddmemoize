@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'ref'
-require 'ddtelemetry'
+require 'ddmetrics'
 require 'singleton'
 
 require_relative 'ddmemoize/version'
@@ -22,23 +22,23 @@ module DDMemoize
   end
 
   class << self
-    def enable_telemetry
-      @telemetry_enabled = true
+    def enable_metrics
+      @metrics_enabled = true
     end
 
-    def telemetry_enabled?
-      @telemetry_enabled
+    def metrics_enabled?
+      @metrics_enabled
     end
 
-    def telemetry_counter
-      @_telemetry_counter ||= DDTelemetry::Counter.new
+    def metrics_counter
+      @_metrics_counter ||= DDMetrics::Counter.new
     end
   end
 
-  def self.print_telemetry
+  def self.print_metrics
     headers = %w[memoization hit miss %]
 
-    rows_raw = DDMemoize.telemetry_counter.map do |label, count|
+    rows_raw = DDMemoize.metrics_counter.map do |label, count|
       {
         name: label.fetch(:method),
         type: label.fetch(:type),
@@ -57,7 +57,7 @@ module DDMemoize
     end
 
     all_rows = [headers] + rows
-    puts DDTelemetry::Table.new(all_rows).to_s
+    puts DDMetrics::Table.new(all_rows).to_s
   end
 
   module Mixin
@@ -77,11 +77,11 @@ module DDMemoize
           value = object ? object.value : NONE
         end
 
-        if DDMemoize.telemetry_enabled?
+        if DDMemoize.metrics_enabled?
           if NONE.equal?(value)
-            DDMemoize.telemetry_counter.increment(method: full_method_name, type: :miss)
+            DDMemoize.metrics_counter.increment(method: full_method_name, type: :miss)
           else
-            DDMemoize.telemetry_counter.increment(method: full_method_name, type: :hit)
+            DDMemoize.metrics_counter.increment(method: full_method_name, type: :hit)
           end
         end
 

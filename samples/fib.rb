@@ -2,7 +2,7 @@
 
 require 'ddmemoize'
 
-DDMemoize.enable_telemetry
+DDMemoize.enable_metrics
 
 class FibFast
   DDMemoize.activate(self)
@@ -21,4 +21,4 @@ end
 
 p FibFast.new.fib(1000)
 
-DDMemoize.print_telemetry
+DDMemoize.print_metrics

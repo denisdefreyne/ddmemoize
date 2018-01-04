@@ -30,7 +30,7 @@ Features:
 
 * Supports memoizing functions on frozen objects
 * Releases memoized values when needed in order to reduce memory pressure
-* Optionally records telemetry
+* Optionally records metrics
 
 ## Installation
 
@@ -81,14 +81,14 @@ Alternatively, prepend `memoized` to the function definition:
 
 Do not memoize functions that depend on mutable state.
 
-### Telemetry
+### Metrics
 
-To activate telemetry, call `DDMemoize.enable_telemetry` after requiring `ddmemoize`.
+To activate metrics, call `DDMemoize.enable_metrics` after requiring `ddmemoize`.
 
-To print the collected metrics, call `DDMemoize.print_telemetry`:
+To print the collected metrics, call `DDMemoize.print_metrics`:
 
 ```ruby
-DDMemoize.print_telemetry
+DDMemoize.print_metrics
 ```
 
 ```

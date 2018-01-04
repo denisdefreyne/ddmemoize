@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-DDMemoize.enable_telemetry
+DDMemoize.enable_metrics
 
 describe DDMemoize do
   it 'has a version number' do
@@ -79,7 +79,7 @@ describe DDMemoize do
     record memoized def run; end
   end
 
-  class MemoizationSpecWithTelemetry
+  class MemoizationSpecWithMetrics
     DDMemoize.activate(self)
 
     def run(value)
@@ -115,7 +115,7 @@ describe DDMemoize do
     sample.run
     sample.run
 
-    counter = DDMemoize.telemetry_counter
+    counter = DDMemoize.metrics_counter
 
     expect(counter.get(method: 'MemoizationSpecEqual#run', type: :miss)).to eq(1)
     expect(counter.get(method: 'MemoizationSpecEqual#run', type: :hit)).to eq(2)
@@ -142,26 +142,26 @@ describe DDMemoize do
     expect(MemoizationSpecInlineSyntaxReturn.sym).to eq(:run)
   end
 
-  it 'records telemetry' do
-    sample = MemoizationSpecWithTelemetry.new
+  it 'records metrics' do
+    sample = MemoizationSpecWithMetrics.new
 
     sample.run('denis')
     sample.run('denis')
     sample.run('defreyne')
 
-    counter = DDMemoize.telemetry_counter
+    counter = DDMemoize.metrics_counter
 
-    expect(counter.get(method: 'MemoizationSpecWithTelemetry#run', type: :miss)).to eq(2)
-    expect(counter.get(method: 'MemoizationSpecWithTelemetry#run', type: :hit)).to eq(1)
+    expect(counter.get(method: 'MemoizationSpecWithMetrics#run', type: :miss)).to eq(2)
+    expect(counter.get(method: 'MemoizationSpecWithMetrics#run', type: :hit)).to eq(1)
   end
 
-  it 'prints recorded telemetry' do
-    sample = MemoizationSpecWithTelemetry.new
+  it 'prints recorded metrics' do
+    sample = MemoizationSpecWithMetrics.new
 
     sample.run('denis')
     sample.run('denis')
     sample.run('defreyne')
 
-    expect { DDMemoize.print_telemetry }.to output(/memoization │ hit\s+miss\s+%/).to_stdout
+    expect { DDMemoize.print_metrics }.to output(/memoization │ hit\s+miss\s+%/).to_stdout
   end
 end
