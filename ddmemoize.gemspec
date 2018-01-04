@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.3.0'
 
-  spec.add_runtime_dependency('ddtelemetry', '= 1.0.0a3') # TODO: upgrade
+  spec.add_runtime_dependency('ddmetrics', '= 1.0.0rc1') # TODO: upgrade
   spec.add_runtime_dependency('ref', '~> 2.0')
 
   spec.files         = `git ls-files -z`.split("\x0")
