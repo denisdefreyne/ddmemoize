@@ -1,5 +1,9 @@
 # DDMemoize news
 
+## 1.0.0 (2018-01-07)
+
+(identical to 1.0.0rc1)
+
 ## 1.0.0rc1 (2018-01-04)
 
 Changes:
